@@ -1,6 +1,7 @@
 mod common;
 mod module;
 mod ui;
+mod pipeline;
 
 use common::*;
 
@@ -94,6 +95,7 @@ fn main() {
         .add_systems(PreUpdate, trigger_restart)
         .add_systems(PreStartup, spawn_immortals)
         .add_plugins(module::ModulePlugin)
+        .add_systems(Startup, (pipeline::create_render_target,))
         .add_plugins(ui::BumpUiPlugin);
 
     bevyapp.run();

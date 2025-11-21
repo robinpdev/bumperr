@@ -208,14 +208,6 @@ fn resize_image_observer(
     spawnconfig: Res<ModuleSpawnerConfig>,
 ) {
     if let Ok((win)) = wins.get(resize.entity) {
-        // let image = assets.get_mut(&sprite.image).unwrap();
-
-        // let size = Extent3d {
-        //     width: resize.width as u32,
-        //     height: resize.height as u32,
-        //     ..default()
-        // };
-        // image.resize(size);
 
         trigger_spawner::<ResizeModuleInternal, _>(commands, &spawnconfig, win.class, |spawner| {
             ResizeModuleInternal {

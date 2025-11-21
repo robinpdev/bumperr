@@ -68,8 +68,6 @@ fn pong_system(
         let boxwidth = mw.width;
         let boxheight = mw.height;
 
-        // println!("size: {:?} x {:?}", boxwidth, boxheight);
-
         match *vdir {
             VDirection::Up => pos.translation.y += SPEED,
             VDirection::Down => pos.translation.y -= SPEED,

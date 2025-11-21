@@ -119,7 +119,6 @@ fn resize_surface(
     mut surfaces: Query<(&mut Transform, &MeshMaterial2d<NoiseMaterial>), With<Mesh2d>>,
     roots: Query<&ModuleWithParts, With<ModuleWin>>,
 ) {
-    println!("resizing surface...");
     if let Ok(rootchildren) = roots.get(resize.moduleroot) {
         for child in rootchildren.iter() {
             if let Ok((mut transform, materialref)) = surfaces.get_mut(child) {

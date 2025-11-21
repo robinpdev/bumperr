@@ -67,7 +67,7 @@ features = [
   "webgl2",
   "file_watcher",
   "zstd_rust",
-  "hotpatching"
+  # "hotpatching"
 ]
 
 [target.x86_64-unknown-linux-gnu]
