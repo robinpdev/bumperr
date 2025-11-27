@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 
 use crate::module::*;
+use crate::rendering::*;
 
 use bevy::sprite_render::Material2dPlugin;
 use bevy::{reflect::TypePath, render::render_resource::AsBindGroup};
@@ -12,9 +13,12 @@ pub struct NoiseModule;
 
 impl Plugin for NoiseModule {
     fn build(&self, app: &mut App) {
-        app.add_plugins(Material2dPlugin::<NoiseMaterial>::default())
-            .add_systems(OnEnter(AppState::Startup), setup)
-            .add_systems(EguiPrimaryContextPass, ui_noise);
+        app.add_plugins((
+            Material2dPlugin::<NoiseMaterial>::default(),
+            ShaderChainPlugin,
+        ))
+        .add_systems(OnEnter(AppState::Startup), setup)
+        .add_systems(EguiPrimaryContextPass, ui_noise);
     }
 }
 
@@ -26,10 +30,10 @@ fn ui_noise(
     for (shaderid, shader) in materials.iter_mut() {
         if let Ok(_win) = windows.single() {
             egui::Window::new(format!("Noise params"))
-            .id(egui::Id::new(shaderid))
-            .show(contexts.ctx_mut()?, |ui| {
-                ui.add(egui::Slider::new(&mut shader.speed, 0.0..=10.0).suffix("°"));
-            });
+                .id(egui::Id::new(shaderid))
+                .show(contexts.ctx_mut()?, |ui| {
+                    ui.add(egui::Slider::new(&mut shader.speed, 0.0..=10.0).suffix("°"));
+                });
         }
     }
     Ok(())
@@ -82,7 +86,13 @@ pub fn spawn_noise_module(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut shadermaterials: ResMut<Assets<NoiseMaterial>>,
+    mut images: ResMut<Assets<Image>>,
 ) {
+    let image = Image::new_target_texture(512, 512, TextureFormat::bevy_default());
+    let image_handle = images.add(image);
+
+    let drawlayer = RenderLayers::layer(1);
+
     if spawn.moduleclass != ModuleClass::Noise {
         return;
     };
@@ -106,9 +116,26 @@ pub fn spawn_noise_module(
                 module_id: spawn.root_id,
             },
             ModulePart(spawn.root_id),
-            // spawn.layer.clone()
+            drawlayer.clone(),
         ))
         .id();
+
+    commands.spawn((
+        Camera2d::default(),
+        Camera {
+            target: image_handle.clone().into(),
+            clear_color: Color::WHITE.into(),
+            ..default()
+        },
+        Transform::from_translation(Vec3::new(0.0, 0.0, 15.0)).looking_at(Vec3::ZERO, Vec3::Y),
+        ShaderChainCamera {
+            shaders: vec!["shaders/post_processing.wgsl".to_string()],
+        },
+        drawlayer,
+    ));
+
+    //Sprite to display the rendered texture
+    commands.spawn(Sprite::from_image(image_handle.clone()));
 
     commands.entity(spawn.root_id).add_child(shadersurface);
 }

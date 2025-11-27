@@ -1,11 +1,18 @@
 mod common;
 mod module;
-mod ui;
 mod pipeline;
+mod rendering;
+mod ui;
 
 use common::*;
 
-use bevy::{dev_tools::fps_overlay::{FpsOverlayConfig, FpsOverlayPlugin, FrameTimeGraphConfig}, prelude::*, sprite_render::Material2dPlugin};
+use bevy::{
+    dev_tools::fps_overlay::{FpsOverlayConfig, FpsOverlayPlugin, FrameTimeGraphConfig},
+    prelude::*,
+    sprite_render::Material2dPlugin,
+};
+
+use crate::rendering::ShaderChainCamera;
 
 struct OverlayColor;
 
@@ -14,34 +21,32 @@ impl OverlayColor {
     const GREEN: Color = Color::srgb(0.0, 1.0, 0.0);
 }
 
-
 fn main() {
     let mut bevyapp = App::new();
 
-    let mut default_plugins = DefaultPlugins
-        .set(WindowPlugin {
-            primary_window: Some(Window {
-                title: "I am the window!".into(),
-                name: Some("bevy.app".into()),
-                resolution: (1000, 700).into(),
-                // present_mode: PresentMode::AutoNoVsync,
-                // Tells Wasm to resize the window according to the available canvas
-                fit_canvas_to_parent: true,
-                // Tells Wasm not to override default event handling, like F5, Ctrl+R etc.
-                prevent_default_event_handling: false,
-                // window_theme: Some(WindowTheme::Dark),
-                // enabled_buttons: bevy::window::EnabledButtons {
-                //     maximize: false,
-                //     ..Default::default()
-                // },
-                // This will spawn an invisible window
-                // The window will be made visible in the make_visible() system after 3 frames.
-                // This is useful when you want to avoid the white window that shows up before the GPU is ready to render the app.
-                visible: true,
-                ..default()
-            }),
+    let mut default_plugins = DefaultPlugins.set(WindowPlugin {
+        primary_window: Some(Window {
+            title: "I am the window!".into(),
+            name: Some("bevy.app".into()),
+            resolution: (1000, 700).into(),
+            // present_mode: PresentMode::AutoNoVsync,
+            // Tells Wasm to resize the window according to the available canvas
+            fit_canvas_to_parent: true,
+            // Tells Wasm not to override default event handling, like F5, Ctrl+R etc.
+            prevent_default_event_handling: false,
+            // window_theme: Some(WindowTheme::Dark),
+            // enabled_buttons: bevy::window::EnabledButtons {
+            //     maximize: false,
+            //     ..Default::default()
+            // },
+            // This will spawn an invisible window
+            // The window will be made visible in the make_visible() system after 3 frames.
+            // This is useful when you want to avoid the white window that shows up before the GPU is ready to render the app.
+            visible: true,
             ..default()
-        });
+        }),
+        ..default()
+    });
 
     // Conditionally add the AssetPlugin for Linux
     #[cfg(all(target_os = "linux"))]
@@ -126,13 +131,14 @@ fn trigger_restart(
 
 /// Code that is actually! run once on startup of your program
 /// You can spawn entities with the Immortal component (above) here and they will not be removed when restarting
-fn spawn_immortals(
-    mut commands: Commands,
-) {
+fn spawn_immortals(mut commands: Commands) {
     println!("immortal");
 
     // main camera
-    commands.spawn((Camera2d, Immortal));
+    commands.spawn((
+        Camera2d,
+        Immortal,
+    ));
 }
 
 fn get_component_names(world: &World, entity: Entity) -> Option<Vec<String>> {
@@ -163,13 +169,16 @@ fn teardown(
             // Without<EguiContext>,
         ),
     >,
-    world: &World
+    world: &World,
 ) {
     // if you want to see what components that entities about to be despawned have
 
     for entity in query.iter() {
         if let Some(component_names) = get_component_names(world, entity) {
-            println!("Component names for entity {:?}: {:?}", entity, component_names);
+            println!(
+                "Component names for entity {:?}: {:?}",
+                entity, component_names
+            );
         } else {
             // This branch is now reached if the entity doesn't exist.
             println!("Entity {:?} does not exist.", entity);

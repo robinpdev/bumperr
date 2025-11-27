@@ -1,5 +1,6 @@
 use crate::common::*;
 use crate::module::noise::spawn_noise_module;
+use crate::rendering::ShaderChainPlugin;
 
 use bevy::platform::collections::HashMap;
 use bevy::prelude::*;
