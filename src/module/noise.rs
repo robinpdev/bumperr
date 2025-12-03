@@ -1,3 +1,4 @@
+use bevy::asset::uuid::Uuid;
 use bevy::prelude::*;
 
 use crate::module::*;
@@ -99,6 +100,7 @@ pub fn spawn_noise_module(
     // Spawn the noise module entities here
     println!("Spawning Noise Module");
 
+
     let shader = shadermaterials.add(NoiseMaterial {
         color: LinearRgba::GREEN,
         width: BOXWIDTH,
@@ -129,7 +131,11 @@ pub fn spawn_noise_module(
         },
         Transform::from_translation(Vec3::new(0.0, 0.0, 15.0)).looking_at(Vec3::ZERO, Vec3::Y),
         ShaderChainCamera {
-            shaders: vec!["shaders/post_processing.wgsl".to_string()],
+            shaders: vec![
+                "shaders/post_processing.wgsl".to_string(),
+                "shaders/post_processing_2.wgsl".to_string(),
+                ],
+            iid: 1,
         },
         drawlayer,
     ));
