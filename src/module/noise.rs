@@ -126,22 +126,28 @@ pub fn spawn_noise_module(
         Camera2d::default(),
         Camera {
             target: image_handle.clone().into(),
-            clear_color: Color::WHITE.into(),
+            clear_color: Color::hsla(0.0, 0.0, 0.0, 0.0).into(),
             ..default()
         },
         Transform::from_translation(Vec3::new(0.0, 0.0, 15.0)).looking_at(Vec3::ZERO, Vec3::Y),
         ShaderChainCamera {
             shaders: vec![
-                "shaders/post_processing.wgsl".to_string(),
                 "shaders/post_processing_2.wgsl".to_string(),
+                "shaders/post_processing.wgsl".to_string(),
                 ],
             iid: 1,
         },
         drawlayer,
+        
     ));
 
     //Sprite to display the rendered texture
-    commands.spawn(Sprite::from_image(image_handle.clone()));
+    commands.spawn(
+        (
+            ModulePart(spawn.root_id),
+            Sprite::from_image(image_handle.clone()),
+        )
+    );
 
     commands.entity(spawn.root_id).add_child(shadersurface);
 }
@@ -151,6 +157,8 @@ fn resize_surface(
     mut materials: ResMut<Assets<NoiseMaterial>>,
     mut surfaces: Query<(&mut Transform, &MeshMaterial2d<NoiseMaterial>), With<Mesh2d>>,
     roots: Query<&ModuleWithParts, With<ModuleWin>>,
+    sprites: Query<&Sprite>,
+    mut images: ResMut<Assets<Image>>
 ) {
     if let Ok(rootchildren) = roots.get(resize.moduleroot) {
         for child in rootchildren.iter() {
@@ -160,6 +168,11 @@ fn resize_surface(
                 if let Some(shader) = materials.get_mut(materialref.id()) {
                     shader.width = resize.width;
                     shader.height = resize.height;
+                }
+            }
+            else if let Ok(sprite) = sprites.get(child) {
+                if let Some(image) = images.get_mut(sprite.image.id()){
+                    image.resize(Extent3d { width: resize.width as u32, height:resize.height as u32, depth_or_array_layers: 1 });
                 }
             }
         }

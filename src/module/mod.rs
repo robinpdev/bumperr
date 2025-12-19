@@ -117,7 +117,6 @@ fn trigger_spawner<'a, E: Event<Trigger<'a>: Default>, F>(
     if let Some(spawners) = spawnconfig.observers.get(&class) {
         for spawner in spawners.iter() {
             let ev = make_event(*spawner);
-            println!(": {:?}", spawner);
             commands.trigger(ev);
         }
     }

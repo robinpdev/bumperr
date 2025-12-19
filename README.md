@@ -1,51 +1,18 @@
-# Bevy start template for fast iteration / developer experience
+Bumper: Code defined motion graphics
+What if you had the limitlessness of code defined graphics, and the instant feedback that a GUI gives?
 
-## Features
-- Dynamically linking the engine (faster compile times, smaller executable)
-- Hot patching using dioxus (You can make and run changes to the code without fully recompiling / restarting the executable)
-- Hot reloading of assets (shaders, images, ...) using [bevy's builtin hot reloading system](https://bevy-cheatbook.github.io/assets/hot-reload.html) 
-- Optimized for compile speed (Mold linker, Cranelift codegen, Nightly rust compiler)
-- ImGUI debug UI
-- Release build optimized for size (about 82MB)
+Bumper is an experimental motion graphic design program based on the [Bevy](https://bevy.org/) game engine.
 
-## Prerequisites
-- Linux development environment (Can compile to all other supported bevy platforms, but some development tooling is Linux-specific)
-- Install the Mold linker, clang and Cranelift (instructions on [the bevy site](https://bevy.org/learn/quick-start/getting-started/setup/#enable-fast-compiles-optional) )
-- install dioxus: ```cargo install dioxus-cli@0.7.0-alpha.1```
-- install just: ```cargo install just```
+The program differs from other procedural graphics tools by being fully open to any extensions and exporting to WASM to use the resulting scenes on websites.
 
-## running
-- To start running your debug build, run ```just runhot```
-- If you want to hot patch a function, annotate it with 
-- To restart the entire scene (e.g. when you changed the setup function), press R in the bevy window
+Users can write and dynamically reload graphical modules that they can then use to create art within the compositor and instantly change layout, custom defined parameters and effects.
 
+### features
+- Hot reloadable graphics modules
+- compositor
+- Edit custom parameters in realtime using a GUI
+- Chaining hot reloading shaders
 
-
-# Bumperr
-
-Cross platform procedural + interactive motion graphics toolkit
-### Define graphical operators with code and combine them using a node graph and compositor
-
-### export options:
-- Executable (Linux, Mac, Windows)
-- Web using webassembly
-
-## why?
-There are some distinguishing features that are not available in some motion graphics programs:
-- Web export
-- Interactivity possible
-- Native executables (better performance)
-- 2D/3D compositor
-- Intuitive usage
-
-## Roadmap
-- Dynamically add module instances
-- Dynamic parameter updating (using gui)
-- Operator chaining
-- Write standard operators
-    - noise
-    - gradient
-    - displacement map
-    - shapes
-    - glow
-- compositor features (layering, visibility, ...)
+roadmap:
+- Binding logical parameters in a graph layout
+...

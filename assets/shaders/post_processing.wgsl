@@ -40,6 +40,6 @@ fn fragment(in: FullscreenVertexOutput) -> @location(0) vec4<f32> {
         textureSample(screen_texture, texture_sampler, in.uv + vec2<f32>(offset_strength, -offset_strength)).r,
         textureSample(screen_texture, texture_sampler, in.uv + vec2<f32>(-offset_strength, 0.0)).g,
         textureSample(screen_texture, texture_sampler, in.uv + vec2<f32>(0.0, offset_strength)).b,
-        1.0
+        textureSample(screen_texture, texture_sampler, in.uv).a
     );
 }
