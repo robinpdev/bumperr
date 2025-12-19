@@ -3,7 +3,10 @@ What if you had the limitlessness of code defined graphics, and the instant feed
 
 Bumper is an experimental motion graphic design program based on the [Bevy](https://bevy.org/) game engine.
 
-The program differs from other procedural graphics tools by being fully open to any extensions and exporting to WASM to use the resulting scenes on websites.
+The program differs from other procedural graphics tools by:
+- Being fully open to any extensions
+- Running cross platform (Mac, Windows, Linux)
+- Exporting to WASM to use the resulting scenes on websites.
 
 Users can write and dynamically reload graphical modules that they can then use to create art within the compositor and instantly change layout, custom defined parameters and effects.
 
