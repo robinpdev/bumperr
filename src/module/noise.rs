@@ -1,4 +1,5 @@
 use bevy::asset::uuid::Uuid;
+use bevy::camera::RenderTarget;
 use bevy::prelude::*;
 
 use crate::module::*;
@@ -89,7 +90,7 @@ pub fn spawn_noise_module(
     mut shadermaterials: ResMut<Assets<NoiseMaterial>>,
     mut images: ResMut<Assets<Image>>,
 ) {
-    let image = Image::new_target_texture(512, 512, TextureFormat::bevy_default());
+    let image = Image::new_target_texture(512, 512, TextureFormat::bevy_default(), None);
     let image_handle = images.add(image);
 
     let drawlayer = RenderLayers::layer(1);
@@ -124,8 +125,8 @@ pub fn spawn_noise_module(
 
     commands.spawn((
         Camera2d::default(),
+        RenderTarget::Image(image_handle.clone().into()),
         Camera {
-            target: image_handle.clone().into(),
             clear_color: Color::hsla(0.0, 0.0, 0.0, 0.0).into(),
             ..default()
         },
@@ -142,14 +143,14 @@ pub fn spawn_noise_module(
     ));
 
     //Sprite to display the rendered texture
-    commands.spawn(
+    let sprite = commands.spawn(
         (
             ModulePart(spawn.root_id),
             Sprite::from_image(image_handle.clone()),
         )
-    );
+    ).id();
 
-    commands.entity(spawn.root_id).add_child(shadersurface);
+    commands.entity(spawn.root_id).add_child(sprite);
 }
 
 fn resize_surface(

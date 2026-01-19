@@ -161,7 +161,7 @@ fn teardown(
         Entity,
         (
             Without<bevy::window::PrimaryWindow>,
-            Without<bevy::picking::pointer::PointerInteraction>,
+            // Without<bevy::picking::pointer::PointerInteraction>,
             Without<bevy::ecs::observer::Observer>,
             Without<bevy::window::Monitor>,
             Without<Immortal>,

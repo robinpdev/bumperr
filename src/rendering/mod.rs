@@ -6,7 +6,7 @@ use bevy::asset::uuid::Uuid;
 use bevy::core_pipeline::core_2d::graph::{Core2d, Node2d};
 use bevy::render::{self, Render};
 use bevy::render::render_graph::RenderGraph;
-use bevy::{asset::ron::de, prelude::*};
+use bevy::{prelude::*};
 
 use bevy::{
     core_pipeline::{
@@ -136,7 +136,10 @@ fn find_chains(
             println!("Initializing post process pipeline");
             // println!("Found shader chain camera with shaders: {:?}", chain.shaders);
             // We need to define the bind group layout used for our pipeline
-            let layout = render_device.create_bind_group_layout(
+
+
+            // We need to define the bind group layout used for our pipeline
+            let layout = BindGroupLayoutDescriptor::new(
                 "post_process_bind_group_layout",
                 &BindGroupLayoutEntries::sequential(
                     // The layout entries will only be visible in the fragment stage
@@ -146,7 +149,6 @@ fn find_chains(
                         texture_2d(TextureSampleType::Float { filterable: true }),
                         // The sampler that will be used to sample the screen texture
                         sampler(SamplerBindingType::Filtering),
-                        // The settings uniform that will control the effect
                     ),
                 ),
             );
@@ -204,7 +206,7 @@ struct PostProcessSpecializer;
 // This contains global data used by the render pipeline. This will be created once on startup.
 #[derive(Resource)]
 struct PostProcessPipeline {
-    layout: BindGroupLayout,
+    layout: BindGroupLayoutDescriptor,
     sampler: Sampler,
     pipeline_id: CachedRenderPipelineId,
     pipelines: HashMap<u32, Vec<CachedRenderPipelineId>>,
@@ -249,7 +251,7 @@ fn init_post_process_pipeline(
     println!("Initializing post process pipeline");
     // println!("Found shader chain camera with shaders: {:?}", chain.shaders);
     // We need to define the bind group layout used for our pipeline
-    let layout = render_device.create_bind_group_layout(
+    let layout = BindGroupLayoutDescriptor::new(
         "post_process_bind_group_layout",
         &BindGroupLayoutEntries::sequential(
             // The layout entries will only be visible in the fragment stage
@@ -259,7 +261,6 @@ fn init_post_process_pipeline(
                 texture_2d(TextureSampleType::Float { filterable: true }),
                 // The sampler that will be used to sample the screen texture
                 sampler(SamplerBindingType::Filtering),
-                // The settings uniform that will control the effect
             ),
         ),
     );
@@ -372,7 +373,7 @@ impl ViewNode for PostProcessNode {
             // is to make sure you get it during the node execution.
             let bind_group = render_context.render_device().create_bind_group(
                 "post_process_bind_group",
-                &post_process_pipeline.layout,
+                &pipeline_cache.get_bind_group_layout(&post_process_pipeline.layout),
                 // It's important for this to match the BindGroupLayout defined in the PostProcessPipeline
                 &BindGroupEntries::sequential((
                     // Make sure to use the source view
